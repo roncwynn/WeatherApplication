@@ -1,0 +1,168 @@
+﻿@page "/"
+@inject IHttpClientFactory _clientFactory
+@inject IConfiguration _config
+
+<div @onclick="PageClickEvent">
+    <EditForm Model="@myAddress" OnValidSubmit="SubmitAddress">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <InputText @bind-Value="myAddress.StructureNumber" placeholder="Structure Number" />
+        <InputText @bind-Value="myAddress.StreetName" placeholder="Street Name" />
+        <InputText @bind-Value="myAddress.City" placeholder="City" />
+        <InputSelect @bind-Value="myAddress.StateCode" @oninput="ChangeState">
+            <option value=""> State ...</option>
+            @foreach (var s in Enum.GetValues(typeof(US_State.StateName)))
+            {
+                <option value="@s">@s</option>
+            }
+        </InputSelect>
+        <button class="btn-primary" type="submit">Get Forecast</button>
+    </EditForm>
+</div>
+
+@if (geoLocal != null)
+{
+    @if (string.IsNullOrWhiteSpace(errorString) == false)
+    { if (invalidAddress) { <div class="alert-danger">@errorString</div> } }
+    else if (forecastData is null) { <div class="spinner"></div> }
+    else
+    {
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Daily Forecast</th>
+                    <th></th>
+                    <th>Nightly Forecast</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i <= forecastData.properties.periods.Length - 2; i = i + 2)
+                {
+                    var day = forecastData.properties.periods[i];
+                    var night = forecastData.properties.periods[i + 1];
+                    <tr>
+                        <td>@day.name</td>
+                        <td><img src=@day.icon style="width:50px;height:50px" /></td>
+                        <td>@day.detailedForecast</td>
+                        <td><img src=@night.icon style="width:50px;height:50px" /></td>
+                        <td>@night.detailedForecast</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+   private GeoLocationModel geoLocal;
+   private ForecastModel forecastData;
+   private string errorString, delimeterPlusSign, delimeterComma, delimeterSlash;
+   private string addressString, cityString, stateString;
+   private string suffixString;
+   private string pointsString, gridpointsString, forecastString;
+   private string SelectedStateCode { get; set; } = string.Empty;
+   private bool invalidAddress = false;
+   private AddressModel myAddress = new AddressModel();
+
+   void ChangeState(ChangeEventArgs changeEventArgs)
+   {
+       US_State state = new US_State();
+       SelectedStateCode = state.GetStateCode(changeEventArgs.Value.ToString());
+   }
+
+   void PageClickEvent(MouseEventArgs mouseEventArgs)
+   {
+       if (invalidAddress) { invalidAddress=false; }
+   }
+
+   private string BuildAddressString(AddressModel someAddress)
+   {
+       StringBuilder address = new StringBuilder();
+       address.Append(addressString); address.Append(someAddress.StructureNumber);
+       address.Append(delimeterPlusSign); address.Append(someAddress.StreetName);
+       address.Append(cityString); address.Append(someAddress.City);
+       address.Append(stateString); address.Append(SelectedStateCode);
+       address.Append(suffixString);
+       address.Replace(' ', '+');
+
+       return address.ToString();
+   }
+
+   private string BuildForcastPointsString(GeoLocationModel someGeolocal)
+   {
+       //For this version of the solution we assume that the first returned result is the desired forcast location
+       //Therefore hardcoding [0] for the result.addressMatches is appropriate
+       //In a future version we may handle allowing the use to select a result
+       StringBuilder coordinatesString = new StringBuilder();
+       coordinatesString.Clear();
+       coordinatesString.Append(pointsString);
+       coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.y.ToString());
+       coordinatesString.Append(delimeterComma);
+       coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.x.ToString());
+
+       return coordinatesString.ToString();
+   }
+
+   private string BuildForecastString(ForecastsPointModel someForeCastpoint)
+   {
+       StringBuilder forecast = new StringBuilder();
+       forecast.Append(gridpointsString);
+       forecast.Append(someForeCastpoint.properties.gridId.ToString());
+       forecast.Append(delimeterSlash);
+       forecast.Append(someForeCastpoint.properties.gridX.ToString());
+       forecast.Append(delimeterComma);
+       forecast.Append(someForeCastpoint.properties.gridY.ToString());
+       forecast.Append(forecastString);
+
+       return forecast.ToString();
+   }
+
+   protected async Task SubmitAddress()
+   {
+       var geoClient = _clientFactory.CreateClient("geoCode");
+       var weatherClient = _clientFactory.CreateClient("weatherGov");
+       ForecastsPointModel forecastPoint;
+
+       try
+       {
+           geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(BuildAddressString(myAddress));
+           forecastPoint = await weatherClient.GetFromJsonAsync<ForecastsPointModel>(BuildForcastPointsString(geoLocal));
+           forecastData = await weatherClient.GetFromJsonAsync<ForecastModel>(BuildForecastString(forecastPoint));
+           errorString = null;
+           invalidAddress = false;
+       }
+       catch (Exception)
+       {
+           errorString = "We're sorry.  The address entered appears to be invalid.  Please correct and try again.";
+           invalidAddress = true;
+       }
+   }
+
+   private void SetConfigStrings()
+   {
+       delimeterPlusSign = _config.GetValue<string>("delimeterPlusSign");
+       delimeterComma = _config.GetValue<string>("delimeterComma");
+       delimeterSlash = _config.GetValue<string>("delimeterSlash");
+       addressString = _config.GetValue<string>("addressString");
+       cityString = _config.GetValue<string>("cityString");
+       stateString = _config.GetValue<string>("stateString");
+       suffixString = _config.GetValue<string>("suffixString");
+       pointsString = _config.GetValue<string>("pointsString");
+       gridpointsString = _config.GetValue<string>("gridpointsString");
+       forecastString = _config.GetValue<string>("forecastString");
+   }
+
+   protected override void OnInitialized()
+   {
+       //base.OnInitialized();
+       SetConfigStrings();
+   }
+
+   protected override async Task OnInitializedAsync()
+   {
+       //TODO:  Determine if there is anything that should be running here.
+       //await Task.Run(SubmitAddress);
+   }
+}

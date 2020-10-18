@@ -1,0 +1,23 @@
+﻿@inherits LayoutComponentBase
+
+<div class="sidebar">
+    <NavMenu />
+</div>
+
+<div class="main">
+    <div class="top-row px-4">
+        <a href="https://testoil.com/company/about-us/" target="_blank">About TestOil</a>
+    </div>
+
+    <div class="content px-4">
+        @Body
+        <footer class="footer">
+            @TrademarkMessage
+        </footer>
+    </div>
+</div>
+
+@code {
+   public string TrademarkMessage { get; set; } =
+       "©INSIGHT SERVICES, INC.  2020 ALL RIGHTS RESERVED";
+}
