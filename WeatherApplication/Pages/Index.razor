@@ -16,6 +16,13 @@
                 <option value="@s">@s</option>
             }
         </InputSelect>
+        <InputSelect @bind-Value="numDaysString" @oninput="ChangeNumDays">
+            @for (int i=1;i<8;i++)
+            {
+                <option value=@i>@i</option>
+            }
+
+        </InputSelect>
         <button class="btn-primary" type="submit">Get Forecast</button>
     </EditForm>
 </div>
@@ -40,8 +47,8 @@
                 </tr>
             </thead>
             <tbody>
-
-                @for (int i = 0; i <= forecastData.properties.periods.Length - 2; i = i + 2)
+                @for (int i = 0; i<(numDays*2)-1;i=i+2)
+                @*@for (int i = 0; i <= forecastData.properties.periods.Length - 2; i = i + 2)*@
                 {
                     //var day = forecastData.properties.periods[0];
                     //var night = forecastData.properties.periods[0];
@@ -76,6 +83,8 @@
    private string addressString, cityString, stateString;
    private string suffixString, pointsString, gridpointsString, forecastString;
    private string SelectedStateCode { get; set; } = string.Empty;
+   private string numDaysString { get; set; } = string.Empty;
+   private int numDays { get; set; } = 0;
    private bool invalidAddress = false;
    private AddressModel myAddress = new AddressModel();
 
@@ -83,6 +92,12 @@
    {
        US_State state = new US_State();
        SelectedStateCode = state.GetStateCode(changeEventArgs.Value.ToString());
+   }
+
+   void ChangeNumDays (ChangeEventArgs changeEventArgs)
+   {
+       numDays = Convert.ToInt32(changeEventArgs.Value);
+
    }
 
    void PageClickEvent(MouseEventArgs mouseEventArgs)
