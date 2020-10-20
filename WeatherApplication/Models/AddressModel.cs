@@ -29,6 +29,7 @@ namespace WeatherApplication.Models
       {
          SetConfigStrings();
       }
+
       public string BuildAddressString(string SelectedStateCode)
       {
          StringBuilder address = new StringBuilder();

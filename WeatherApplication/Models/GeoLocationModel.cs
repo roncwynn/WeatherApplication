@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace WeatherApplication.Models
@@ -8,6 +9,39 @@ namespace WeatherApplication.Models
    public class GeoLocationModel
    {
       public Result result { get; set; }
+
+      private string pointsString;
+      private string delimeterComma;
+
+      public GeoLocationModel()
+      {
+         SetConfigStrings();
+      }
+
+      public string BuildForcastPointsString()
+      {
+         //For this version of the solution we assume that the first returned result is the desired forcast location
+         //Therefore hardcoding [0] for the result.addressMatches is appropriate
+         //In a future version we may handle allowing the use to select a result
+         StringBuilder coordinatesString = new StringBuilder();
+         coordinatesString.Clear();
+         coordinatesString.Append(pointsString);
+         //coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.y.ToString());
+         coordinatesString.Append(result.addressMatches[0].coordinates.y.ToString());
+         coordinatesString.Append(delimeterComma);
+         //coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.x.ToString());
+         coordinatesString.Append(result.addressMatches[0].coordinates.x.ToString());
+
+         return coordinatesString.ToString();
+      }
+      private void SetConfigStrings()
+      {
+         //TODO:  Pull these from appsettings or some other configuration file
+         //TODO:  Possibly implement and Interface
+         delimeterComma = ",";
+         pointsString = "points/";
+      }
+
    }
 
    public class Result

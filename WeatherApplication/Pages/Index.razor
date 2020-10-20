@@ -105,33 +105,20 @@
        if (invalidAddress) { invalidAddress=false; }
    }
 
-   //private string BuildAddressString(AddressModel someAddress)
+   //private string BuildForcastPointsString(GeoLocationModel someGeolocal)
    //{
-   //    StringBuilder address = new StringBuilder();
-   //    address.Append(addressString); address.Append(someAddress.StructureNumber);
-   //    address.Append(delimeterPlusSign); address.Append(someAddress.StreetName);
-   //    address.Append(cityString); address.Append(someAddress.City);
-   //    address.Append(stateString); address.Append(SelectedStateCode);
-   //    address.Append(suffixString);
-   //    address.Replace(' ', '+');
+   //    //For this version of the solution we assume that the first returned result is the desired forcast location
+   //    //Therefore hardcoding [0] for the result.addressMatches is appropriate
+   //    //In a future version we may handle allowing the use to select a result
+   //    StringBuilder coordinatesString = new StringBuilder();
+   //    coordinatesString.Clear();
+   //    coordinatesString.Append(pointsString);
+   //    coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.y.ToString());
+   //    coordinatesString.Append(delimeterComma);
+   //    coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.x.ToString());
 
-   //    return address.ToString();
+   //    return coordinatesString.ToString();
    //}
-
-   private string BuildForcastPointsString(GeoLocationModel someGeolocal)
-   {
-       //For this version of the solution we assume that the first returned result is the desired forcast location
-       //Therefore hardcoding [0] for the result.addressMatches is appropriate
-       //In a future version we may handle allowing the use to select a result
-       StringBuilder coordinatesString = new StringBuilder();
-       coordinatesString.Clear();
-       coordinatesString.Append(pointsString);
-       coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.y.ToString());
-       coordinatesString.Append(delimeterComma);
-       coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.x.ToString());
-
-       return coordinatesString.ToString();
-   }
 
    private string BuildForecastString(ForecastsPointModel someForeCastpoint)
    {
@@ -155,9 +142,9 @@
 
        try
        {
-           //geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(BuildAddressString(myAddress));
            geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(myAddress.BuildAddressString(SelectedStateCode));
-           forecastPoint = await weatherClient.GetFromJsonAsync<ForecastsPointModel>(BuildForcastPointsString(geoLocal));
+           //forecastPoint = await weatherClient.GetFromJsonAsync<ForecastsPointModel>(BuildForcastPointsString(geoLocal));
+           forecastPoint = await weatherClient.GetFromJsonAsync<ForecastsPointModel>(geoLocal.BuildForcastPointsString());
            forecastData = await weatherClient.GetFromJsonAsync<ForecastModel>(BuildForecastString(forecastPoint));
            errorString = null;
            invalidAddress = false;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace WeatherApplication.Models
@@ -11,6 +12,15 @@ namespace WeatherApplication.Models
       public string id { get; set; }
       public string type { get; set; }
       public ForecastPointProperties properties { get; set; }
+
+      private string pointsString;
+      private string delimeterComma;
+
+      public ForecastsPointModel()
+      {
+         //SetConfigStrings();
+      }
+  
    }
 
    public class ForecastPointProperties
