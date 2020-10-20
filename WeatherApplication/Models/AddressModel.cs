@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace WeatherApplication.Models
@@ -18,6 +19,41 @@ namespace WeatherApplication.Models
       public string City { get; set; }
 
       [Required(ErrorMessage = "State is required.")]
-      public string StateCode { get; set; }
+      public string State { get; set; }
+
+      private string addressString, cityString, stateString;
+      private string delimeterPlusSign;
+      private string suffixString;
+
+      public AddressModel()
+      {
+         SetConfigStrings();
+      }
+
+      public string BuildAddressString()
+      {
+         US_State state = new US_State();
+         string selState = state.GetStateCode(State);
+         StringBuilder address = new StringBuilder();
+         address.Append(addressString); address.Append(StructureNumber);
+         address.Append(delimeterPlusSign); address.Append(StreetName);
+         address.Append(cityString); address.Append(City);
+         address.Append(stateString); address.Append(selState);
+         address.Append(suffixString);
+         address.Replace(' ', '+');
+
+         return address.ToString();
+      }
+   
+      private void SetConfigStrings()
+      {
+         //TODO:  Pull these from appsettings or some other configuration file
+         //TODO:  Possibly implement and Interface
+         delimeterPlusSign = "+";
+         addressString = "address?street=";
+         cityString = "&city=";
+         stateString = "&state=";
+         suffixString = "&benchmark=9&format=json";
+      }
    }
 }

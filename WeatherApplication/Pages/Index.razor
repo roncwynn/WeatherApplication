@@ -9,8 +9,8 @@
         <InputText @bind-Value="myAddress.StructureNumber" placeholder="Structure Number" />
         <InputText @bind-Value="myAddress.StreetName" placeholder="Street Name" />
         <InputText @bind-Value="myAddress.City" placeholder="City" />
-        <InputSelect @bind-Value="myAddress.StateCode" @oninput="ChangeState">
-            <option value=""> State ...</option>
+        <InputSelect @bind-Value="myAddress.State">
+            <option value="">State</option>
             @foreach (var s in Enum.GetValues(typeof(US_State.StateName)))
             {
                 <option value="@s">@s</option>
@@ -21,7 +21,6 @@
             {
                 <option value=@i>@i</option>
             }
-
         </InputSelect>
         <button class="btn-primary" type="submit">Get Forecast</button>
     </EditForm>
@@ -48,20 +47,9 @@
             </thead>
             <tbody>
                 @for (int i = 0; i<(numDays*2)-1;i=i+2)
-                @*@for (int i = 0; i <= forecastData.properties.periods.Length - 2; i = i + 2)*@
                 {
-                    //var day = forecastData.properties.periods[0];
-                    //var night = forecastData.properties.periods[0];
-                    //if (forecastData.properties.periods[i].isDaytime)
-                    //{
                      var   day = forecastData.properties.periods[i];
                      var   night = forecastData.properties.periods[i + 1];
-                    //}
-                    //else
-                    //{
-                       // day = forecastData.properties.periods[i+1];
-                        //night = forecastData.properties.periods[i];
-                    //}
                 <tr>
                     <td>@day.name</td>
                     <td><img src=@day.icon style="width:50px;height:50px" /></td>
@@ -88,63 +76,14 @@
    private bool invalidAddress = false;
    private AddressModel myAddress = new AddressModel();
 
-   void ChangeState(ChangeEventArgs changeEventArgs)
-   {
-       US_State state = new US_State();
-       SelectedStateCode = state.GetStateCode(changeEventArgs.Value.ToString());
-   }
-
    void ChangeNumDays (ChangeEventArgs changeEventArgs)
    {
        numDays = Convert.ToInt32(changeEventArgs.Value);
-
    }
 
    void PageClickEvent(MouseEventArgs mouseEventArgs)
    {
        if (invalidAddress) { invalidAddress=false; }
-   }
-
-   private string BuildAddressString(AddressModel someAddress)
-   {
-       StringBuilder address = new StringBuilder();
-       address.Append(addressString); address.Append(someAddress.StructureNumber);
-       address.Append(delimeterPlusSign); address.Append(someAddress.StreetName);
-       address.Append(cityString); address.Append(someAddress.City);
-       address.Append(stateString); address.Append(SelectedStateCode);
-       address.Append(suffixString);
-       address.Replace(' ', '+');
-
-       return address.ToString();
-   }
-
-   private string BuildForcastPointsString(GeoLocationModel someGeolocal)
-   {
-       //For this version of the solution we assume that the first returned result is the desired forcast location
-       //Therefore hardcoding [0] for the result.addressMatches is appropriate
-       //In a future version we may handle allowing the use to select a result
-       StringBuilder coordinatesString = new StringBuilder();
-       coordinatesString.Clear();
-       coordinatesString.Append(pointsString);
-       coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.y.ToString());
-       coordinatesString.Append(delimeterComma);
-       coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.x.ToString());
-
-       return coordinatesString.ToString();
-   }
-
-   private string BuildForecastString(ForecastsPointModel someForeCastpoint)
-   {
-       StringBuilder forecast = new StringBuilder();
-       forecast.Append(gridpointsString);
-       forecast.Append(someForeCastpoint.properties.gridId.ToString());
-       forecast.Append(delimeterSlash);
-       forecast.Append(someForeCastpoint.properties.gridX.ToString());
-       forecast.Append(delimeterComma);
-       forecast.Append(someForeCastpoint.properties.gridY.ToString());
-       forecast.Append(forecastString);
-
-       return forecast.ToString();
    }
 
    protected async Task SubmitAddress()
@@ -155,9 +94,9 @@
 
        try
        {
-           geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(BuildAddressString(myAddress));
-           forecastPoint = await weatherClient.GetFromJsonAsync<ForecastsPointModel>(BuildForcastPointsString(geoLocal));
-           forecastData = await weatherClient.GetFromJsonAsync<ForecastModel>(BuildForecastString(forecastPoint));
+           geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(myAddress.BuildAddressString());
+           forecastPoint = await weatherClient.GetFromJsonAsync<ForecastsPointModel>(geoLocal.BuildForcastPointsString());
+           forecastData = await weatherClient.GetFromJsonAsync<ForecastModel>(forecastPoint.BuildForecastString());
            errorString = null;
            invalidAddress = false;
        }
