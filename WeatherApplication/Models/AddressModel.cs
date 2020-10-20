@@ -30,13 +30,15 @@ namespace WeatherApplication.Models
          SetConfigStrings();
       }
 
-      public string BuildAddressString(string SelectedStateCode)
+      public string BuildAddressString()
       {
+         US_State state = new US_State();
+         string selState = state.GetStateCode(StateCode);
          StringBuilder address = new StringBuilder();
          address.Append(addressString); address.Append(StructureNumber);
          address.Append(delimeterPlusSign); address.Append(StreetName);
          address.Append(cityString); address.Append(City);
-         address.Append(stateString); address.Append(SelectedStateCode);
+         address.Append(stateString); address.Append(selState);
          address.Append(suffixString);
          address.Replace(' ', '+');
 

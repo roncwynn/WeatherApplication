@@ -90,9 +90,8 @@
 
    void ChangeState(ChangeEventArgs changeEventArgs)
    {
-       US_State state = new US_State();
-       SelectedStateCode = state.GetStateCode(changeEventArgs.Value.ToString());
-       //AddressModel
+   //    US_State state = new US_State();
+   //    SelectedStateCode = state.GetStateCode(changeEventArgs.Value.ToString());
    }
 
    void ChangeNumDays (ChangeEventArgs changeEventArgs)
@@ -105,20 +104,6 @@
        if (invalidAddress) { invalidAddress=false; }
    }
 
-   //private string BuildForecastString(ForecastsPointModel someForeCastpoint)
-   //{
-   //    StringBuilder forecast = new StringBuilder();
-   //    forecast.Append(gridpointsString);
-   //    forecast.Append(someForeCastpoint.properties.gridId.ToString());
-   //    forecast.Append(delimeterSlash);
-   //    forecast.Append(someForeCastpoint.properties.gridX.ToString());
-   //    forecast.Append(delimeterComma);
-   //    forecast.Append(someForeCastpoint.properties.gridY.ToString());
-   //    forecast.Append(forecastString);
-
-   //    return forecast.ToString();
-   //}
-
    protected async Task SubmitAddress()
    {
        var geoClient = _clientFactory.CreateClient("geoCode");
@@ -127,9 +112,8 @@
 
        try
        {
-           geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(myAddress.BuildAddressString(SelectedStateCode));
+           geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(myAddress.BuildAddressString());
            forecastPoint = await weatherClient.GetFromJsonAsync<ForecastsPointModel>(geoLocal.BuildForcastPointsString());
-           //forecastData = await weatherClient.GetFromJsonAsync<ForecastModel>(BuildForecastString(forecastPoint));
            forecastData = await weatherClient.GetFromJsonAsync<ForecastModel>(forecastPoint.BuildForecastString());
            errorString = null;
            invalidAddress = false;
