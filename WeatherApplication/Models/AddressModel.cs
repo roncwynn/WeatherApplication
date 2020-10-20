@@ -25,9 +25,12 @@ namespace WeatherApplication.Models
       private string delimeterPlusSign;
       private string suffixString;
 
-      public string BuildAddressString(string SelectedStateCode)
+      public AddressModel()
       {
          SetConfigStrings();
+      }
+      public string BuildAddressString(string SelectedStateCode)
+      {
          StringBuilder address = new StringBuilder();
          address.Append(addressString); address.Append(StructureNumber);
          address.Append(delimeterPlusSign); address.Append(StreetName);
@@ -41,19 +44,13 @@ namespace WeatherApplication.Models
    
       private void SetConfigStrings()
       {
-         //delimeterPlusSign = _config.GetValue<string>("delimeterPlusSign");
+         //TODO:  Pull these from appsettings or some other configuration file
+         //TODO:  Possibly implement and Interface
          delimeterPlusSign = "+";
-         //addressString = _config.GetValue<string>("addressString");
          addressString = "address?street=";
-         //cityString = _config.GetValue<string>("cityString");
          cityString = "&city=";
-         //stateString = _config.GetValue<string>("stateString");
          stateString = "&state=";
-         //suffixString = _config.GetValue<string>("suffixString");
          suffixString = "&benchmark=9&format=json";
-         //pointsString = _config.GetValue<string>("pointsString");
       }
-
-
    }
 }
