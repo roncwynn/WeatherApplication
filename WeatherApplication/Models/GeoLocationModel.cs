@@ -26,10 +26,8 @@ namespace WeatherApplication.Models
          StringBuilder coordinatesString = new StringBuilder();
          coordinatesString.Clear();
          coordinatesString.Append(pointsString);
-         //coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.y.ToString());
          coordinatesString.Append(result.addressMatches[0].coordinates.y.ToString());
          coordinatesString.Append(delimeterComma);
-         //coordinatesString.Append(someGeolocal.result.addressMatches[0].coordinates.x.ToString());
          coordinatesString.Append(result.addressMatches[0].coordinates.x.ToString());
 
          return coordinatesString.ToString();
