@@ -92,12 +92,12 @@
    {
        US_State state = new US_State();
        SelectedStateCode = state.GetStateCode(changeEventArgs.Value.ToString());
+       //AddressModel
    }
 
    void ChangeNumDays (ChangeEventArgs changeEventArgs)
    {
        numDays = Convert.ToInt32(changeEventArgs.Value);
-
    }
 
    void PageClickEvent(MouseEventArgs mouseEventArgs)
@@ -105,18 +105,18 @@
        if (invalidAddress) { invalidAddress=false; }
    }
 
-   private string BuildAddressString(AddressModel someAddress)
-   {
-       StringBuilder address = new StringBuilder();
-       address.Append(addressString); address.Append(someAddress.StructureNumber);
-       address.Append(delimeterPlusSign); address.Append(someAddress.StreetName);
-       address.Append(cityString); address.Append(someAddress.City);
-       address.Append(stateString); address.Append(SelectedStateCode);
-       address.Append(suffixString);
-       address.Replace(' ', '+');
+   //private string BuildAddressString(AddressModel someAddress)
+   //{
+   //    StringBuilder address = new StringBuilder();
+   //    address.Append(addressString); address.Append(someAddress.StructureNumber);
+   //    address.Append(delimeterPlusSign); address.Append(someAddress.StreetName);
+   //    address.Append(cityString); address.Append(someAddress.City);
+   //    address.Append(stateString); address.Append(SelectedStateCode);
+   //    address.Append(suffixString);
+   //    address.Replace(' ', '+');
 
-       return address.ToString();
-   }
+   //    return address.ToString();
+   //}
 
    private string BuildForcastPointsString(GeoLocationModel someGeolocal)
    {
@@ -155,7 +155,8 @@
 
        try
        {
-           geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(BuildAddressString(myAddress));
+           //geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(BuildAddressString(myAddress));
+           geoLocal = await geoClient.GetFromJsonAsync<GeoLocationModel>(myAddress.BuildAddressString(SelectedStateCode));
            forecastPoint = await weatherClient.GetFromJsonAsync<ForecastsPointModel>(BuildForcastPointsString(geoLocal));
            forecastData = await weatherClient.GetFromJsonAsync<ForecastModel>(BuildForecastString(forecastPoint));
            errorString = null;
