@@ -39,24 +39,36 @@
                 <tr>
                     <th></th>
                     <th></th>
-                    <th>Daily Forecast</th>
+                    @if (forecastData.properties.periods[0].isDaytime) { <th>Daily Forecast</th> }
+                    else { <th>Nightly Forecast</th> }
                     <th></th>
-                    <th>Nightly Forecast</th>
+                    @if (forecastData.properties.periods[1].isDaytime) { <th>Daily Forecast</th>}
+                    else { <th>Nightly Forecast</th> }
                 </tr>
             </thead>
             <tbody>
                 @for (int i = 0; i<(numDays*2)-1;i=i+2)
                 @*@for (int i = 0; i <= forecastData.properties.periods.Length - 2; i = i + 2)*@
                 {
-                    var day = forecastData.properties.periods[i];
-                    var night = forecastData.properties.periods[i + 1];
-                    <tr>
-                        <td>@day.name</td>
-                        <td><img src=@day.icon style="width:50px;height:50px" /></td>
-                        <td>@day.detailedForecast</td>
-                        <td><img src=@night.icon style="width:50px;height:50px" /></td>
-                        <td>@night.detailedForecast</td>
-                    </tr>
+                    //var day = forecastData.properties.periods[0];
+                    //var night = forecastData.properties.periods[0];
+                    //if (forecastData.properties.periods[i].isDaytime)
+                    //{
+                     var   day = forecastData.properties.periods[i];
+                     var   night = forecastData.properties.periods[i + 1];
+                    //}
+                    //else
+                    //{
+                       // day = forecastData.properties.periods[i+1];
+                        //night = forecastData.properties.periods[i];
+                    //}
+                <tr>
+                    <td>@day.name</td>
+                    <td><img src=@day.icon style="width:50px;height:50px" /></td>
+                    <td>@day.detailedForecast</td>
+                    <td><img src=@night.icon style="width:50px;height:50px" /></td>
+                    <td>@night.detailedForecast</td>
+                </tr>
                 }
             </tbody>
         </table>
