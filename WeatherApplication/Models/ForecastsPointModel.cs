@@ -26,7 +26,6 @@ namespace WeatherApplication.Models
       {
          StringBuilder forecast = new StringBuilder();
          forecast.Append(gridpointsString);
-         //forecast.Append(someForeCastpoint.properties.gridId.ToString());
          forecast.Append(properties.gridId.ToString());
          forecast.Append(delimeterSlash);
          forecast.Append(properties.gridX.ToString());
@@ -46,7 +45,6 @@ namespace WeatherApplication.Models
          gridpointsString = "gridpoints/";
          forecastString = "/forecast";
       }
-
    }
 
    public class ForecastPointProperties

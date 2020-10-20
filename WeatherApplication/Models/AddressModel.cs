@@ -19,7 +19,7 @@ namespace WeatherApplication.Models
       public string City { get; set; }
 
       [Required(ErrorMessage = "State is required.")]
-      public string StateCode { get; set; }
+      public string State { get; set; }
 
       private string addressString, cityString, stateString;
       private string delimeterPlusSign;
@@ -33,7 +33,7 @@ namespace WeatherApplication.Models
       public string BuildAddressString()
       {
          US_State state = new US_State();
-         string selState = state.GetStateCode(StateCode);
+         string selState = state.GetStateCode(State);
          StringBuilder address = new StringBuilder();
          address.Append(addressString); address.Append(StructureNumber);
          address.Append(delimeterPlusSign); address.Append(StreetName);

@@ -39,7 +39,6 @@ namespace WeatherApplication.Models
          delimeterComma = ",";
          pointsString = "points/";
       }
-
    }
 
    public class Result
