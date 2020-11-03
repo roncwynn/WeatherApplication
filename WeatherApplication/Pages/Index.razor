@@ -16,12 +16,13 @@
                 <option value="@s">@s</option>
             }
         </InputSelect>
-        <InputSelect @bind-Value="numDaysString" @oninput="ChangeNumDays">
+        @*Commenting out drop down until redesign is complete*@
+        @*<InputSelect @bind-Value="numDaysString" @oninput="ChangeNumDays">
             @for (int i=1;i<8;i++)
             {
                 <option value=@i>@i</option>
             }
-        </InputSelect>
+        </InputSelect>*@
         <button class="btn-primary" type="submit">Get Forecast</button>
     </EditForm>
 </div>
@@ -72,7 +73,9 @@
    private string suffixString, pointsString, gridpointsString, forecastString;
    private string SelectedStateCode { get; set; } = string.Empty;
    private string numDaysString { get; set; } = string.Empty;
-   private int numDays { get; set; } = 0;
+   //  Hard coding the numDays value to 7 days until complete redesign encorporates drop down functionality
+   //private int numDays { get; set; } = 0;
+   private int numDays { get; set; } = 7;
    private bool invalidAddress = false;
    private AddressModel myAddress = new AddressModel();
 
