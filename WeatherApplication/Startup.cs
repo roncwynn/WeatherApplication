@@ -28,6 +28,7 @@ namespace WeatherApplication
          services.AddRazorPages();
          services.AddServerSideBlazor();
          services.AddHttpClient();
+         services.AddSingleton<IConfiguration>(Configuration);
          services.AddHttpClient("geoCode", c => { c.BaseAddress = new Uri(Configuration.GetValue<string>("geoCodeAPI")); });
          services.AddHttpClient("weatherGov", c =>
          {
